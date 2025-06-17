@@ -1,6 +1,7 @@
 package com.prompto.service.emailTemplateService;
 
 import com.prompto.dto.emailTemplate.EmailTemplateDTO;
+import com.prompto.exception.ResourceNotFoundException;
 import com.prompto.model.emailTemplate.EmailTemplate;
 import com.prompto.repository.emailTemplate.EmailTemplateRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,30 +20,13 @@ public class EmailTemplateService {
 
     public List<EmailTemplateDTO> getAllEmailTemplates() {
         return emailTemplateRepository.findAll().stream()
-                .map(emailTemplate -> {
-                    EmailTemplateDTO dto = new EmailTemplateDTO();
-                    dto.setId(emailTemplate.getId());
-                    dto.setName(emailTemplate.getName());
-                    dto.setSubject(emailTemplate.getSubject());
-                    dto.setBodyHtml(emailTemplate.getBodyHtml());
-                    dto.setCreatedAt(emailTemplate.getCreatedAt());
-                    dto.setUpdatedAt(emailTemplate.getUpdatedAt());
-                    return dto;
-                })
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public Optional<EmailTemplateDTO> getEmailTemplateById(Long id) {
-        return emailTemplateRepository.findById(id).map(emailTemplate -> {
-            EmailTemplateDTO dto = new EmailTemplateDTO();
-            dto.setId(emailTemplate.getId());
-            dto.setName(emailTemplate.getName());
-            dto.setSubject(emailTemplate.getSubject());
-            dto.setBodyHtml(emailTemplate.getBodyHtml());
-            dto.setCreatedAt(emailTemplate.getCreatedAt());
-            dto.setUpdatedAt(emailTemplate.getUpdatedAt());
-            return dto;
-        });
+    public EmailTemplateDTO getEmailTemplateById(Long id) {
+        return toDTO(emailTemplateRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Email template with ID " + id + " not found")));
     }
 
     public EmailTemplateDTO createEmailTemplate(EmailTemplateDTO emailTemplateDTO) {
@@ -53,23 +37,25 @@ public class EmailTemplateService {
         return toDTO(emailTemplateRepository.save(entity));
     }
 
-    public Optional<EmailTemplateDTO> update(Long emailTemplateId, EmailTemplateDTO emailTemplateDTO) {
-        return emailTemplateRepository.findById(emailTemplateId).map(existing -> {
-            existing.setName(emailTemplateDTO.getName());
-            existing.setSubject(emailTemplateDTO.getSubject());
-            existing.setBodyHtml(emailTemplateDTO.getBodyHtml());
-            existing.setUpdatedAt(LocalDateTime.now());
-            return toDTO(emailTemplateRepository.save(existing));
-        });
+    public EmailTemplateDTO update(Long emailTemplateId, EmailTemplateDTO emailTemplateDTO) {
+        EmailTemplate existing = emailTemplateRepository.findById(emailTemplateId)
+                .orElseThrow(() -> new ResourceNotFoundException("Email template with ID " + emailTemplateId + " not found"));
+
+        existing.setName(emailTemplateDTO.getName());
+        existing.setSubject(emailTemplateDTO.getSubject());
+        existing.setBodyHtml(emailTemplateDTO.getBodyHtml());
+        existing.setUpdatedAt(LocalDateTime.now());
+
+        return toDTO(emailTemplateRepository.save(existing));
     }
 
-    public boolean delete(Long emailTemplateId) {
-        if (emailTemplateRepository.existsById(emailTemplateId)) {
-            emailTemplateRepository.deleteById(emailTemplateId);
-            return true;
+    public void delete(Long emailTemplateId) {
+        if (!emailTemplateRepository.existsById(emailTemplateId)) {
+            throw new ResourceNotFoundException("Email template with ID " + emailTemplateId + "not found");
         }
-        return false;
+        emailTemplateRepository.deleteById(emailTemplateId);
     }
+
 
 
     private EmailTemplateDTO toDTO(EmailTemplate entity) {

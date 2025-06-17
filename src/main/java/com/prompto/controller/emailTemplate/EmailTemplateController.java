@@ -22,9 +22,8 @@ public class EmailTemplateController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EmailTemplateDTO> getById(@PathVariable Long id) {
-        return emailTemplateService.getEmailTemplateById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        EmailTemplateDTO dto = emailTemplateService.getEmailTemplateById(id);
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping
@@ -34,16 +33,13 @@ public class EmailTemplateController {
 
     @PutMapping("/{id}")
     public ResponseEntity<EmailTemplateDTO> update(@PathVariable Long id, @RequestBody EmailTemplateDTO dto) {
-        return emailTemplateService.update(id, dto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        EmailTemplateDTO updated = emailTemplateService.update(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (emailTemplateService.delete(id)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        emailTemplateService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
