@@ -2,7 +2,8 @@ package com.prompto.controller.emailTemplate;
 
 import com.prompto.dto.emailTemplate.EmailTemplateDTO;
 import com.prompto.service.emailTemplateService.EmailTemplateService;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +11,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/templates")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class EmailTemplateController {
 
-    private final EmailTemplateService emailTemplateService;
+    @Autowired
+    EmailTemplateService emailTemplateService;
 
     @GetMapping
     public List<EmailTemplateDTO> getAll() {

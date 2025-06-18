@@ -1,11 +1,12 @@
 package com.prompto.dto.emailTemplate;
 
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 // This class is a Data Transfer Object (DTO) for Email Template.
-@Data
+@Getter
+@Setter
 public class EmailTemplateDTO {
 
     private Long id;
