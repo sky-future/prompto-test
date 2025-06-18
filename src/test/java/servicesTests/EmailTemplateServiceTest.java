@@ -4,7 +4,7 @@ import com.prompto.dto.emailTemplate.EmailTemplateDTO;
 import com.prompto.exception.ResourceNotFoundException;
 import com.prompto.model.emailTemplate.EmailTemplate;
 import com.prompto.repository.emailTemplate.EmailTemplateRepository;
-import com.prompto.service.emailTemplateService.EmailTemplateService;
+import com.prompto.service.impl.EmailTemplateServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +24,7 @@ class EmailTemplateServiceTest {
     private EmailTemplateRepository repository;
 
     @InjectMocks
-    private EmailTemplateService service;
+    private EmailTemplateServiceImpl service;
 
     @Test
     void testGetEmailTemplateById_success() {

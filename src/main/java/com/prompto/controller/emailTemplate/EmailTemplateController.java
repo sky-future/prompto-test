@@ -1,7 +1,7 @@
 package com.prompto.controller.emailTemplate;
 
 import com.prompto.dto.emailTemplate.EmailTemplateDTO;
-import com.prompto.service.emailTemplateService.EmailTemplateService;
+import com.prompto.service.impl.EmailTemplateServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,33 +15,33 @@ import java.util.List;
 public class EmailTemplateController {
 
     @Autowired
-    EmailTemplateService emailTemplateService;
+    EmailTemplateServiceImpl emailTemplateServiceImpl;
 
     @GetMapping
     public List<EmailTemplateDTO> getAll() {
-        return emailTemplateService.getAllEmailTemplates();
+        return emailTemplateServiceImpl.getAllEmailTemplates();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EmailTemplateDTO> getById(@PathVariable Long id) {
-        EmailTemplateDTO dto = emailTemplateService.getEmailTemplateById(id);
+        EmailTemplateDTO dto = emailTemplateServiceImpl.getEmailTemplateById(id);
         return ResponseEntity.ok(dto);
     }
 
     @PostMapping
     public ResponseEntity<EmailTemplateDTO> create(@RequestBody EmailTemplateDTO dto) {
-        return ResponseEntity.ok(emailTemplateService.createEmailTemplate(dto));
+        return ResponseEntity.ok(emailTemplateServiceImpl.createEmailTemplate(dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<EmailTemplateDTO> update(@PathVariable Long id, @RequestBody EmailTemplateDTO dto) {
-        EmailTemplateDTO updated = emailTemplateService.update(id, dto);
+        EmailTemplateDTO updated = emailTemplateServiceImpl.update(id, dto);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        emailTemplateService.delete(id);
+        emailTemplateServiceImpl.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

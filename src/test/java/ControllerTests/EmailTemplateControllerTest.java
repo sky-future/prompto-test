@@ -3,7 +3,7 @@ package ControllerTests;
 import com.prompto.controller.emailTemplate.EmailTemplateController;
 import com.prompto.dto.emailTemplate.EmailTemplateDTO;
 import com.prompto.exception.ResourceNotFoundException;
-import com.prompto.service.emailTemplateService.EmailTemplateService;
+import com.prompto.service.impl.EmailTemplateServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 public class EmailTemplateControllerTest {
 
     @Mock
-    private EmailTemplateService service;
+    private EmailTemplateServiceImpl service;
 
     @InjectMocks
     private EmailTemplateController controller;
