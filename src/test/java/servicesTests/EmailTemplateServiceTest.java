@@ -28,8 +28,8 @@ class EmailTemplateServiceTest {
 
     @Test
     void testGetEmailTemplateById_success() {
+        LocalDateTime now = LocalDateTime.now();
         EmailTemplate entity = new EmailTemplate();
-        entity.setId(1L);
         entity.setName("Test");
         entity.setSubject("Subject");
         entity.setBodyHtml("<p>Hi</p>");
@@ -42,6 +42,10 @@ class EmailTemplateServiceTest {
 
         assertNotNull(dto);
         assertEquals("Test", dto.getName());
+        assertEquals("Subject", dto.getSubject());
+        assertEquals("<p>Hi</p>", dto.getBodyHtml());
+        assertEquals(now, dto.getCreatedAt());
+
     }
 
     @Test
@@ -55,6 +59,7 @@ class EmailTemplateServiceTest {
     @Test
     void testCreateEmailTemplate() {
         EmailTemplateDTO dto = new EmailTemplateDTO();
+        LocalDateTime now = LocalDateTime.now();
         dto.setName("New");
         dto.setSubject("New Subject");
         dto.setBodyHtml("<p>New</p>");
@@ -64,7 +69,7 @@ class EmailTemplateServiceTest {
         saved.setName("New");
         saved.setSubject("New Subject");
         saved.setBodyHtml("<p>New</p>");
-        saved.setCreatedAt(LocalDateTime.now());
+        saved.setCreatedAt(now);
         saved.setUpdatedAt(LocalDateTime.now());
 
         when(repository.save(any(EmailTemplate.class))).thenReturn(saved);
@@ -73,6 +78,10 @@ class EmailTemplateServiceTest {
 
         assertNotNull(result.getId());
         assertEquals("New", result.getName());
+        assertEquals("New Subject", result.getSubject());
+        assertEquals("<p>New</p>", result.getBodyHtml());
+        assertEquals(now, result.getCreatedAt());
+
     }
 
     @Test
