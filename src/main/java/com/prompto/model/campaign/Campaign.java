@@ -2,6 +2,7 @@ package com.prompto.model.campaign;
 
 
 import com.prompto.model.campaignStatus.CampaignStatus;
+import com.prompto.model.emailTemplate.EmailTemplate;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,7 +19,9 @@ public class Campaign {
     private Long id;
 
     private String name;
-    private Long templateId;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private EmailTemplate template;
 
     @ElementCollection
     private List<Long > contactIds;
