@@ -28,7 +28,7 @@ public class MailChimpClient {
     * Send an email using Mailchimp Transactional API
     * @param subject the subject of the email
     * @param html the HTML content of the email
-
+    * @param toEmail the recipient's email address
     */
 
     public Mono<Void> send(String subject, String html, String toEmail) {
