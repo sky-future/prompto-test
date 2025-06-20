@@ -35,10 +35,21 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
     @Override
     public EmailTemplateDTO createEmailTemplate(EmailTemplateDTO emailTemplateDTO) {
-        emailTemplateDTO.setId(null); // Ensure ID is null for new entities
-        EmailTemplate entity = toEntity(emailTemplateDTO);
+        if (emailTemplateDTO == null || emailTemplateDTO.getName() == null || emailTemplateDTO.getName().trim().isEmpty()
+                || emailTemplateDTO.getSubject() == null || emailTemplateDTO.getSubject().trim().isEmpty()
+                || emailTemplateDTO.getBodyHtml() == null || emailTemplateDTO.getBodyHtml().trim().isEmpty()) {
+            throw new IllegalArgumentException("Name, subject and body HTML are required");
+        }
+
+        emailTemplateDTO.setId(null);
+        EmailTemplate entity = new EmailTemplate();
+
+        entity.setName(emailTemplateDTO.getName());
+        entity.setSubject(emailTemplateDTO.getSubject());
+        entity.setBodyHtml(emailTemplateDTO.getBodyHtml());
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
+
         return toDTO(emailTemplateRepository.save(entity));
     }
 

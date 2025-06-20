@@ -44,11 +44,17 @@ public class EmailTemplateControllerTest {
 
     @Test
     public void testGetAll() {
-        when(service.getAllEmailTemplates()).thenReturn(Collections.singletonList(sampleDTO));
-        List<EmailTemplateDTO> result = controller.getAll();
-        assertEquals(1, result.size());
-        assertEquals("Test template", result.getFirst().getName());
-    }
+                when(service.getAllEmailTemplates()).thenReturn(Collections.singletonList(sampleDTO));
+
+                ResponseEntity<List<EmailTemplateDTO>> response = controller.getAll();
+
+                assertEquals(HttpStatus.OK, response.getStatusCode());
+                List<EmailTemplateDTO> result = response.getBody();
+                assertNotNull(result);
+                assertEquals(1, result.size());
+                assertEquals("Test template", result.getFirst().getName());
+            }
+
 
     @Test
     public void testGetById_found() {
@@ -66,10 +72,10 @@ public class EmailTemplateControllerTest {
             .thenThrow(new ResourceNotFoundException("Email template with ID " + nonExistentId + " not found"));
 
         ResourceNotFoundException exception = assertThrows(
-            ResourceNotFoundException.class, 
+            ResourceNotFoundException.class,
             () -> controller.getById(nonExistentId)
         );
-        
+
         assertNotNull(exception);
         assertTrue(exception.getMessage().contains(nonExistentId.toString()));
         verify(service, times(1)).getEmailTemplateById(nonExistentId);
@@ -79,7 +85,7 @@ public class EmailTemplateControllerTest {
     public void testCreate() {
         when(service.createEmailTemplate(sampleDTO)).thenReturn(sampleDTO);
         ResponseEntity<EmailTemplateDTO> response = controller.create(sampleDTO);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Test template", response.getBody().getName());
     }
@@ -126,4 +132,56 @@ public class EmailTemplateControllerTest {
 
         assertThrows(ResourceNotFoundException.class, () -> controller.delete(2L));
     }
+
+    @Test
+    public void testCreate_withNullTemplate() {
+        assertThrows(IllegalArgumentException.class, () -> controller.create(null));
+    }
+
+    @Test
+    public void testCreate_withInvalidTemplate() {
+        EmailTemplateDTO invalidDTO = new EmailTemplateDTO();
+
+        when(service.createEmailTemplate(invalidDTO))
+                .thenThrow(new IllegalArgumentException("Template name and content are required"));
+
+        assertThrows(IllegalArgumentException.class, () -> controller.create(invalidDTO));
+    }
+
+    @Test
+    public void testGetAll_emptyList() {
+        when(service.getAllEmailTemplates()).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<EmailTemplateDTO>> response = controller.getAll();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isEmpty());
+    }
+
+    @Test
+    public void testCreate_withExistingName() {
+        when(service.createEmailTemplate(sampleDTO))
+                .thenThrow(new IllegalStateException("Template with this name already exists"));
+
+        assertThrows(IllegalStateException.class, () -> controller.create(sampleDTO));
+    }
+
+    @Test
+    public void testUpdate_withoutIdChange() {
+        EmailTemplateDTO updatedDTO = new EmailTemplateDTO();
+        updatedDTO.setId(1L);
+        updatedDTO.setName("Updated Name");
+        updatedDTO.setSubject("Updated Subject");
+
+        when(service.update(1L, updatedDTO)).thenReturn(updatedDTO);
+
+        ResponseEntity<EmailTemplateDTO> response = controller.update(1L, updatedDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Updated Name", response.getBody().getName());
+        assertEquals("Updated Subject", response.getBody().getSubject());
+    }
+
+
 }

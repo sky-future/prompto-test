@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -90,4 +92,92 @@ class EmailTemplateServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () -> service.delete(1L));
     }
+
+    @Test
+    void testUpdate_success() {
+        // Setup existing template
+        EmailTemplate existing = new EmailTemplate();
+        existing.setId(1L);
+        existing.setName("Original");
+        existing.setSubject("Original Subject");
+        existing.setBodyHtml("<p>Original</p>");
+        existing.setCreatedAt(LocalDateTime.now());
+        existing.setUpdatedAt(LocalDateTime.now());
+
+        // Setup update DTO
+        EmailTemplateDTO updateDto = new EmailTemplateDTO();
+        updateDto.setName("Updated");
+        updateDto.setSubject("Updated Subject");
+        updateDto.setBodyHtml("<p>Updated</p>");
+
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.save(any(EmailTemplate.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        EmailTemplateDTO result = service.update(1L, updateDto);
+
+        assertNotNull(result);
+        assertEquals("Updated", result.getName());
+        assertEquals("Updated Subject", result.getSubject());
+        assertEquals("<p>Updated</p>", result.getBodyHtml());
+        verify(repository).save(any(EmailTemplate.class));
+    }
+
+    @Test
+    void testGetAllEmailTemplates_success() {
+        EmailTemplate template1 = new EmailTemplate();
+        template1.setName("Template 1");
+        template1.setSubject("Subject 1");
+
+        EmailTemplate template2 = new EmailTemplate();
+        template2.setName("Template 2");
+        template2.setSubject("Subject 2");
+
+        when(repository.findAll()).thenReturn(List.of(template1, template2));
+
+        List<EmailTemplateDTO> results = service.getAllEmailTemplates();
+
+        assertEquals(2, results.size());
+        assertEquals("Template 1", results.get(0).getName());
+        assertEquals("Template 2", results.get(1).getName());
+    }
+
+    @Test
+    void testDelete_success() {
+        when(repository.existsById(1L)).thenReturn(true);
+        doNothing().when(repository).deleteById(1L);
+
+        assertDoesNotThrow(() -> service.delete(1L));
+        verify(repository).deleteById(1L);
+    }
+
+    @Test
+    void testCreateEmailTemplate_withNullFields() {
+        EmailTemplateDTO dto = new EmailTemplateDTO();
+        // All fields are null
+        assertThrows(IllegalArgumentException.class,
+                () -> service.createEmailTemplate(dto));
+    }
+
+    @Test
+    void testUpdate_notFound() {
+        EmailTemplateDTO updateDto = new EmailTemplateDTO();
+        updateDto.setName("Updated");
+
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> service.update(1L, updateDto));
+    }
+
+    @Test
+    void testGetAllEmailTemplates_empty() {
+        when(repository.findAll()).thenReturn(Collections.emptyList());
+
+        List<EmailTemplateDTO> results = service.getAllEmailTemplates();
+
+        assertNotNull(results);
+        assertTrue(results.isEmpty());
+    }
+
+
 }
