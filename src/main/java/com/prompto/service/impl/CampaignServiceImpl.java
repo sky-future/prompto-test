@@ -1,5 +1,6 @@
 package com.prompto.service.impl;
 
+import com.prompto.config.integration.MailChimpClient;
 import com.prompto.dto.campaign.CampaignDTO;
 import com.prompto.dto.campaignStatistics.CampaignStatisticsDTO;
 import com.prompto.exception.ResourceNotFoundException;
@@ -25,6 +26,7 @@ public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
     private final EmailTemplateRepository emailTemplateRepository;
     private final CampaignStatisticsRepository campaignStatisticsRepository;
+    private final MailChimpClient mailChimpClient;
 
     @Override
     public List<CampaignDTO> getAll() {
@@ -111,6 +113,18 @@ public class CampaignServiceImpl implements CampaignService {
         CampaignStatistics s = campaignStatisticsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Statistics for campaign " + id + " not found"));
         return toDTO(s);
+    }
+
+    public CampaignDTO sendMailChimp(Long id) {
+        Campaign campaign = campaignRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Campaign " + id + " not found"));
+        EmailTemplate t = campaign.getTemplate();
+        for (Long contactId : campaign.getContactIds()) {
+            String email = "mistert9412@gmail.com";
+            mailChimpClient.send(t.getSubject(), t.getBodyHtml(), email).subscribe();
+        }
+        return toDTO(campaign);
     }
 
     private CampaignDTO toDTO(Campaign c) {

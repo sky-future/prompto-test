@@ -1,5 +1,6 @@
 package com.prompto.dto.emailTemplate;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -9,10 +10,16 @@ import java.time.LocalDateTime;
 @Setter
 public class EmailTemplateDTO {
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
+
     private String name;
     private String subject;
     private String bodyHtml;
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime createdAt;
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime updatedAt;
 }

@@ -33,7 +33,7 @@ class EmailTemplateServiceTest {
         entity.setName("Test");
         entity.setSubject("Subject");
         entity.setBodyHtml("<p>Hi</p>");
-        entity.setCreatedAt(LocalDateTime.now());
+        entity.setCreatedAt(now);
         entity.setUpdatedAt(LocalDateTime.now());
 
         when(repository.findById(1L)).thenReturn(Optional.of(entity));
