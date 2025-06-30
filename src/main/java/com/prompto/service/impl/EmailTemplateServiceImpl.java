@@ -48,7 +48,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
         entity.setSubject(emailTemplateDTO.getSubject());
         entity.setBodyHtml(emailTemplateDTO.getBodyHtml());
         entity.setCreatedAt(LocalDateTime.now());
-        entity.setUpdatedAt(LocalDateTime.now());
+        entity.setUpdatedAt(null);
 
         return toDTO(emailTemplateRepository.save(entity));
     }
@@ -74,6 +74,13 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
         emailTemplateRepository.deleteById(emailTemplateId);
     }
 
+    @Override
+    public List<EmailTemplateDTO> getTemplatesThatHaveBeenUpdatedSince(LocalDateTime since) {
+        return emailTemplateRepository.findByUpdatedAtAfter(since)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
 
 
     private EmailTemplateDTO toDTO(EmailTemplate entity) {

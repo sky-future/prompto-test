@@ -5,10 +5,12 @@ import com.prompto.service.emailTemplateService.EmailTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -55,5 +57,13 @@ public class EmailTemplateController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         emailTemplateService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/updated")
+    @Operation(summary = "Get email templates that have been updated since a specific date")
+    @ApiResponse(responseCode = "200", description = "List of updated email templates")
+    public List<EmailTemplateDTO> getUpdatedSince(
+            @RequestParam("since") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime since) {
+        return emailTemplateService.getTemplatesThatHaveBeenUpdatedSince(since);
     }
 }

@@ -31,6 +31,8 @@ public class EmailTemplateControllerTest {
 
     private EmailTemplateDTO sampleDTO;
 
+    private LocalDateTime now = LocalDateTime.now();
+
     @BeforeEach
     void setUp() {
         sampleDTO = new EmailTemplateDTO();
@@ -38,8 +40,8 @@ public class EmailTemplateControllerTest {
         sampleDTO.setName("Test template");
         sampleDTO.setSubject("Test subject");
         sampleDTO.setBodyHtml("<p>Body</p>");
-        sampleDTO.setCreatedAt(LocalDateTime.now());
-        sampleDTO.setUpdatedAt(LocalDateTime.now());
+        sampleDTO.setCreatedAt(now);
+        sampleDTO.setUpdatedAt(null);
     }
 
     @Test
@@ -88,16 +90,37 @@ public class EmailTemplateControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Test template", response.getBody().getName());
+        assertEquals("Test subject", response.getBody().getSubject());
+        assertEquals("<p>Body</p>", response.getBody().getBodyHtml());
+        assertEquals(now, response.getBody().getCreatedAt());
+        assertNull(response.getBody().getUpdatedAt());
     }
 
     @Test
     public void testUpdate_found() {
-        when(service.update(1L, sampleDTO)).thenReturn(sampleDTO);
+        // Create initial timestamp before update
+        LocalDateTime beforeUpdate = LocalDateTime.now();
+
+        // Simulate service behavior with updated DTO
+        EmailTemplateDTO updatedDTO = new EmailTemplateDTO();
+        updatedDTO.setSubject("Test subject");
+        updatedDTO.setCreatedAt(beforeUpdate);
+        updatedDTO.setUpdatedAt(LocalDateTime.now()); // Service sets this value
+        when(service.update(1L, sampleDTO)).thenReturn(updatedDTO);
+
+        // Execute update
         ResponseEntity<EmailTemplateDTO> response = controller.update(1L, sampleDTO);
+
+        // Verifications
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Test subject", response.getBody().getSubject());
+        assertNotNull(response.getBody().getUpdatedAt(), "updatedAt should not be null");
+        assertTrue(response.getBody().getUpdatedAt().isAfter(beforeUpdate),
+                "updatedAt should be after the time before update");
+        assertEquals(beforeUpdate , response.getBody().getCreatedAt(), "createdAt should remain unchanged");
     }
+
 
     @Test
     public void testUpdate_notFound() {

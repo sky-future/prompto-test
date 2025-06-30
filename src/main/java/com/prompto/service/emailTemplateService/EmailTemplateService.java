@@ -2,6 +2,7 @@ package com.prompto.service.emailTemplateService;
 
 import com.prompto.dto.emailTemplate.EmailTemplateDTO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EmailTemplateService {
@@ -14,4 +15,6 @@ public interface EmailTemplateService {
     EmailTemplateDTO update(Long emailTemplateId, EmailTemplateDTO emailTemplateDTO);
 
     void delete(Long emailTemplateId);
+
+    List<EmailTemplateDTO> getTemplatesThatHaveBeenUpdatedSince(LocalDateTime timestamp);
 }
