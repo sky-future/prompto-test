@@ -1,12 +1,16 @@
 package com.prompto.service.impl;
 
 import com.prompto.dto.emailTemplate.EmailTemplateDTO;
+import com.prompto.dto.templateStatistics.EmailTemplateStatisticDTO;
 import com.prompto.exception.ResourceNotFoundException;
+import com.prompto.model.campaign.Campaign;
 import com.prompto.model.emailTemplate.EmailTemplate;
+import com.prompto.repository.campaign.CampaignRepository;
 import com.prompto.repository.emailTemplate.EmailTemplateRepository;
 import com.prompto.service.emailTemplateService.EmailTemplateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +22,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 
     private final EmailTemplateRepository emailTemplateRepository;
+    private final CampaignRepository campaignRepository;
 
 
     @Override
@@ -80,6 +85,21 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public EmailTemplateStatisticDTO getTemplateStatistics(Long templateId) {
+        List<Campaign> campaigns = campaignRepository.findByTemplateId(templateId);
+        int campaignsUsed = campaigns.size();
+        int emailsSent = campaigns.stream()
+                .mapToInt(c -> c.getContactIds() != null ? c.getContactIds().size() : 0)
+                .sum();
+
+        EmailTemplateStatisticDTO stat = new EmailTemplateStatisticDTO();
+        stat.setTemplateId(templateId);
+        stat.setCampaignsUsed(campaignsUsed);
+        stat.setEmailsSent(emailsSent);
+        return stat;
     }
 
 

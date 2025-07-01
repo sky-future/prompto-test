@@ -1,6 +1,7 @@
 package com.prompto.controller.emailTemplate;
 
 import com.prompto.dto.emailTemplate.EmailTemplateDTO;
+import com.prompto.dto.templateStatistics.EmailTemplateStatisticDTO;
 import com.prompto.service.emailTemplateService.EmailTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -65,5 +66,10 @@ public class EmailTemplateController {
     public List<EmailTemplateDTO> getUpdatedSince(
             @RequestParam("since") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime since) {
         return emailTemplateService.getTemplatesThatHaveBeenUpdatedSince(since);
+    }
+
+    @GetMapping("/{id}/statistics")
+    public ResponseEntity<EmailTemplateStatisticDTO> getTemplateStatistics(@PathVariable Long id) {
+        return ResponseEntity.ok(emailTemplateService.getTemplateStatistics(id));
     }
 }
