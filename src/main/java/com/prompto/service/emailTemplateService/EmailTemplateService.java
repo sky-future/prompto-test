@@ -20,4 +20,6 @@ public interface EmailTemplateService {
     List<EmailTemplateDTO> getTemplatesThatHaveBeenUpdatedSince(LocalDateTime timestamp);
 
     EmailTemplateStatisticDTO getTemplateStatistics(Long templateId);
+
+    List<EmailTemplateDTO> getUnusedTemplatesInCampaigns();
 }

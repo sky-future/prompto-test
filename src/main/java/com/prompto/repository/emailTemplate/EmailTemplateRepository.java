@@ -18,6 +18,5 @@ public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, Lo
             SELECT t FROM EmailTemplate t
             WHERE t.id NOT IN (SELECT DISTINCT c.template.id FROM Campaign c)
             """)
-
     List<EmailTemplate> findTemplatesNotUsedInCampaigns();
 }

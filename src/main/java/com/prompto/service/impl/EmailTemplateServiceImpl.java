@@ -102,6 +102,14 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
         return stat;
     }
 
+    @Override
+    public List<EmailTemplateDTO> getUnusedTemplatesInCampaigns() {
+        return emailTemplateRepository.findTemplatesNotUsedInCampaigns()
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
 
     private EmailTemplateDTO toDTO(EmailTemplate entity) {
         EmailTemplateDTO dto = new EmailTemplateDTO();
