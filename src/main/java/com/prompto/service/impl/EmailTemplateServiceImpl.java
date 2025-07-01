@@ -89,6 +89,10 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
     @Transactional(readOnly = true)
     public EmailTemplateStatisticDTO getTemplateStatistics(Long templateId) {
+        if (!emailTemplateRepository.existsById(templateId)) {
+            throw new ResourceNotFoundException("Email template with ID " + templateId + " not found");
+        }
+
         List<Campaign> campaigns = campaignRepository.findByTemplateId(templateId);
         int campaignsUsed = campaigns.size();
         int emailsSent = campaigns.stream()
